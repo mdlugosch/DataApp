@@ -24,6 +24,9 @@ namespace DataApp
             services.AddMvc();
             string conString = Configuration["ConnectionStrings:DefaultConnection"];
             services.AddDbContext<EFDatabaseContext>(options => options.UseSqlServer(conString));
+            // Per DependencyInjection wird durch diese Einstellung überall dort wo ein IDataRepository Interface-Objekt verlangt wird ein EFDataRepository Objekt geliefert.
+            // An dieser stelle kann leicht ein anderes Repository eingesetzt werden.
+            services.AddTransient<IDataRepository, EFDataRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

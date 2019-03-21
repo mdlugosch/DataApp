@@ -9,16 +9,69 @@ namespace DataApp.Controllers
 {
     public class HomeController : Controller
     {
-        private EFDatabaseContext context;
+        private IDataRepository repository;
 
-        // Datencontext wird von MVC über Dependeny Injection übergeben.
-        public HomeController(EFDatabaseContext ctx)
+        // DatenRepository wird von MVC über Dependeny Injection übergeben.
+        public HomeController(IDataRepository repo)
         {
-            context = ctx;
+            repository = repo;
         }
         public IActionResult Index()
         {
-            return View(context.Products);
+            /*
+             * IQueryable hat den Nachteil das Entity Framework nicht weiss das eine
+             * Count Operation und das Filtern nach dem Preis in einer Abfrage erledigt
+             * werden kann. Aus eigentlich einer Abfrage werden daher zwei und bei komplexeren
+             * Abfragen wird  durch ähnliche Fälle Leistung eingebüst.
+             */
+            //var products = repository.Products.Where(p => p.Price > 25);
+            //ViewBag.ProductCount = products.Count();
+            //return View(products);
+
+            /*
+             * Bei solchen Problemen hilft es mit ToList oder ToArray die Abfrage in einem IEnumerable
+             * umzuwandeln. Auf diese Weise kann auf die Liste die sich schon im Speicher befindet ein count ausgeführt werden.
+             */
+            //var products = repository.Products.Where(p => p.Price > 25).ToArray();
+
+            //var products = repository.GetProductsByPrice(25);
+            //ViewBag.ProductCount = products.Count();
+            //return View(products);
+
+            return View(repository.GetAllProducts());
+        }
+
+        public IActionResult Create()
+        {
+            ViewBag.CreateMode = true;
+            return View("Editor", new Product());
+        }
+
+        [HttpPost]
+        public IActionResult Create(Product product)
+        {
+            repository.CreateProduct(product);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Edit(long id)
+        {
+            ViewBag.CreateMode = false;
+            return View("Editor", repository.GetProduct(id));
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Product product)
+        {
+            repository.UpdateProduct(product);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public IActionResult Delete(long id)
+        {
+            repository.DeleteProduct(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
