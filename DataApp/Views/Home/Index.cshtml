@@ -4,6 +4,21 @@
     Layout = "_Layout";
 }
 
+<div class="m-1 p-2">
+    <form asp-action="Index" method="get" class="form-inline">
+        <lable class="m-1">Category:</lable>
+        <select name="category" class="form-control">
+            <option value="">All</option>
+            <option selected="@(ViewBag.category == "Watersports")">Watersports</option>
+            <option selected="@(ViewBag.category == "Soccer")">Soccer</option>
+            <option selected="@(ViewBag.category == "Chess")">Chess</option>
+        </select>
+        <lable class="m-1">Min Price</lable>
+        <input class="form-control" name="price" value="@ViewBag.price" />
+        <button class="btn btn-primary m-1">Filter</button>
+</form>
+</div>
+
 <table class="table table-sm table-striped">
     <thead>
         <tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th></tr>

@@ -16,8 +16,8 @@ namespace DataApp.Controllers
         {
             repository = repo;
         }
-        public IActionResult Index()
-        {
+        //public IActionResult Index()
+        //{
             /*
              * IQueryable hat den Nachteil das Entity Framework nicht weiss das eine
              * Count Operation und das Filtern nach dem Preis in einer Abfrage erledigt
@@ -38,7 +38,19 @@ namespace DataApp.Controllers
             //ViewBag.ProductCount = products.Count();
             //return View(products);
 
-            return View(repository.GetAllProducts());
+            //return View(repository.GetAllProducts());
+
+        //    var products = repository.GetAllProducts();
+        //    System.Console.WriteLine("Property value has been read");
+        //    return View(products);
+        //}
+
+        public IActionResult Index(string category = null, decimal? price = null)
+        {
+            var products = repository.GetFilteredProducts(category, price);
+            ViewBag.category = category;
+            ViewBag.price = price;
+            return View(products);
         }
 
         public IActionResult Create()
@@ -61,9 +73,9 @@ namespace DataApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Product product)
+        public IActionResult Edit(Product product, Product original)
         {
-            repository.UpdateProduct(product);
+            repository.UpdateProduct(product, original);
             return RedirectToAction(nameof(Index));
         }
 
